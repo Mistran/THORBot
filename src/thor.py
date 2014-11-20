@@ -141,82 +141,29 @@ class ThorBot(irc.IRCClient):
                 pass
 
         #Dict Tester
+        if msg == ".debugcount weapons":
+            count = len(dictionaries.Randict.weapons)
+            msg = "Weapons in Dictionary: %s" % count
+            self.msg(channel, msg)
+
+        if msg == ".debugcount shakespeare":
+            count = len(dictionaries.Randict.shakespeare)
+            msg = "Shakespeare in Dictionary: %s" % count
+            self.msg(channel, msg)
+
         if msg.startswith("!slap"):
             slappee = msg.split(' ')
-            slapped = itemgetter(1)(slappee)
+            slapped = itemgetter(slice(1, None))(slappee)
+            sentence = ' '.join(slapped)
             weapon = dictionaries.Randict.weapons
             weaponscore = random.choice(weapon)
-            attack = "\x02%s slapped %s with %s\x02" % (user, slapped, weaponscore)
+            attack = "\x02%s slapped %s with %s\x02" % (user, sentence, weaponscore)
             self.msg(channel, attack)
 
         if msg.startswith("!shakeit"):
             d = dictionaries.Randict
             shake = random.choice(d.shakespeare)
             self.msg(channel, shake)
-
-        #Calculator
-
-        #TODO Add a !calc command that works. Is that too much to ask? (SPOILER: Yes. Yes it is.)
-
-        if msg.startswith("!calc" or "!Calc"):
-
-            if IndexError:
-                error = "ERROR: list index out of range"
-                self.msg(channel, error)
-                return
-
-            calclist = msg.split(' ')
-
-            #Fetch arguments
-
-            calc1 = itemgetter(1)(calclist)
-            opera = itemgetter(2)(calclist)
-            calc2 = itemgetter(3)(calclist)
-
-            #Translate to int
-            calc1 = int(calc1)
-            calc2 = int(calc2)
-
-            #Check if Operator is valid
-            valid = ['+', '/', '-', '*']
-
-            if calc1 == int(calc1):
-                pass
-            if calc1 != int(calc1):
-                msg = "ERROR: ARG1 INCORRECT"
-                self.msg(channel, msg)
-
-            if opera in valid:
-                pass
-            if opera not in valid:
-                msg = "ERROR: OPERATOR INCORRECT"
-                self.msg(channel, msg)
-
-            if calc2 == int(calc2):
-                pass
-            if calc2 != int(calc2):
-                msg = "ERROR: ARG2 INCORRECT"
-                self.msg(channel, msg)
-
-            if opera is '+':
-                result = calc1 + calc2
-                reply = "%s + %s = %s" % (calc1, calc2, result)
-                self.msg(channel, reply)
-
-            if opera is '/':
-                result = calc1 / calc2
-                reply = "%s / %s = %s" % (calc1, calc2, result)
-                self.msg(channel, reply)
-
-            if opera is '-':
-                result = calc1 - calc2
-                reply = "%s - %s = %s" % (calc1, calc2, result)
-                self.msg(channel, reply)
-
-            if opera is '*':
-                result = calc1 * calc2
-                reply = "%s * %s = %s" % (calc1, calc2, result)
-                self.msg(channel, reply)
 
         #Dice Roll
 
