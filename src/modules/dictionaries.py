@@ -41,4 +41,14 @@ class Randict():
                "a WordPress installation", "poor language skills", "an EggDrop bot", "a Bash quote", "weird ramblings",
                "Sean Connery's accent", "Saturn", "Jupiter", "Mars", "a galaxy", "a fringe theory", "the NHS",
                "Tony Abbott", "forgotten Hollywood actors", "people without a sense of fashion",
-               "a Bittersweet Symphony", "a washed up rapper", "poor grammar skillz", "unclosed brackets"]
+               "a Bittersweet Symphony", "a washed up rapper", "poor grammar skillz", "unclosed brackets",
+               "a hundred self-replicating nanobots", "thermonuclear weapons", "the dildo bat from Saint's Row",
+               "80s pop music", "ABBA's Waterloo", "a huge beard", "Tyrion Lannister", "a poor political joke",
+               "the Banhammer", "all of #welcome", "Xycaleth's bot abusing personality", "a segfault",
+               "fears of Socialism", "a copy of the Guardian", "a BMW", "German cars", "Spotify's business model",
+               "the London Philharmonica Orchestra", "Estuans' job description", "people with too much money",
+               "the Greek welfare system", "Estuans' internet connection", "a British comedian", "an Irishman",
+               "some dude from down the black who carries a really big garbage can around and is probably suffering"
+               " from some undiagnosed illness", "a police officer", "a fireman", "a movie soundtrack",
+               "the King and all his horses", "Humpty Dumpty", "a death metal band", "really loud noises",
+               "PornHub", "RadActiveLobstr's ISP"]
