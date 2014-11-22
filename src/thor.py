@@ -11,6 +11,7 @@ from twisted.words.protocols import irc
 
 # INTERNAL Imports
 from modules import dictionaries
+from modules import news_fetcher
 
 # SYS Imports
 import random
@@ -123,6 +124,16 @@ class ThorBot(irc.IRCClient):
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
 
+        if msg == "!reload news":
+            reload(news_fetcher)
+            msg = "News Fetcher updated"
+            self.msg(channel, msg)
+
+        if msg == "!reload dict":
+            reload(dictionaries)
+            msg = "Dictionaries updated"
+            self.msg(channel, msg)
+
         if msg:
             sh = shelve.open('reminders')
             rfor = user
@@ -205,22 +216,16 @@ class ThorBot(irc.IRCClient):
         #URL Fetchers & Integrated Utilities
 
         if msg == "!bbc":
-            fd = feedparser.parse('http://feeds.bbci.co.uk/news/rss.xml?edition=int')
-            description = fd.entries[0].description
-            link = fd.entries[0].link
-            fd = "\x02THE NEWS\x02: \x1D%s\x1D - \x02Read More\x02: %s" % (description, link)
-
-            self.msg(channel, fd.encode('UTF-8'))
-
-        if msg == "!bbc random":
-            r = random.randint(0, 72)
-            fd = feedparser.parse('http://feeds.bbci.co.uk/news/rss.xml?edition=int')
-            description = fd.entries[r].description
-            link = fd.entries[r].link
-            fd = "\x02THE NEWS\x02: \x1D%s\x1D - \x02Read More\x02: %s" % (description, link)
+            b = news_fetcher.BBCNews_r
             self.lineRate = 2
 
-            self.msg(channel, fd.encode('UTF-8'))
+            self.msg(channel, b.bbc_fd.encode('UTF-8'))
+
+        if msg == "!bbc random":
+            b = news_fetcher.BBCNews_r
+            self.lineRate = 2
+
+            self.msg(channel, b.bbcr_fd.encode('UTF-8'))
 
         if msg.startswith("!t "):
             #Translates the source language into the target language
