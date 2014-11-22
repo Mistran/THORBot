@@ -10,8 +10,7 @@ WolframAlpha integration will come later.
 from twisted.words.protocols import irc
 
 # INTERNAL Imports
-from modules import dictionaries
-from modules import news_fetcher
+from modules import dictionaries, news_fetcher, goslate, help
 
 # SYS Imports
 import random
@@ -20,14 +19,11 @@ import datetime
 
 # OTHER Imports
 import ConfigParser
-import feedparser
 import ctypes
 from operator import itemgetter
 
 # HTTP Handlers
 import requests
-
-from modules import goslate
 
 versionName = "Magni"
 versionEnv = "Python 2.7.3"
@@ -123,6 +119,7 @@ class ThorBot(irc.IRCClient):
 
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
+        h = help.Helper
 
         if msg == "!reload news":
             reload(news_fetcher)
@@ -187,30 +184,27 @@ class ThorBot(irc.IRCClient):
         #Help utilities
 
         if msg.startswith("!help bbc"):
-            msg = "Retrieves the most recent news article from BBC News and posts a summary. Use !bbc random for a" \
-                  "random, recent news story. "
+            msg = h.bbc
             self.msg(channel, msg)
 
         if msg.startswith("!help roll"):
-            msg = "'Rolls' a number between 1 and 100."
+            msg = h.roll
             self.msg(channel, msg)
 
         if msg.startswith("!help me"):
-            msg = "I'm sorry, I can't help you."
+            msg = h.me
             self.msg(channel, msg)
 
         if msg.startswith("!help t"):
-            msg = "Takes two arguments; A and B. Argument A will be the source language, argument B will be the target" \
-                  " language. Languages follow ISO 639-1. (See: http://goo.gl/nVuDQJ )"
+            msg = h.t
             self.msg(channel, msg)
 
         if msg.startswith("!help dt"):
-            msg = "Detects the language the sentence is written in and returns a translation in English. No language" \
-                  " codes are required."
+            msg = h.dt
             self.msg(channel, msg)
 
         if msg.startswith("!help qdb"):
-            msg = "Fetches the quote with the number requested. Lazily coded."
+            msg = h.qdb
             self.msg(channel, msg)
 
         #URL Fetchers & Integrated Utilities
