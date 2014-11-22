@@ -1,8 +1,5 @@
 """
-Words are not phrases, merely the building blocks of hazes.
-
-Contains various dictionaries for use in thor.py.
-Keeping this file around for ease of use and orderliness.
+Begone. This is an abomination.
 """
 
 
