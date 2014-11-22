@@ -46,9 +46,13 @@ class Randict():
                "80s pop music", "ABBA's Waterloo", "a huge beard", "Tyrion Lannister", "a poor political joke",
                "the Banhammer", "all of #welcome", "Xycaleth's bot abusing personality", "a segfault",
                "fears of Socialism", "a copy of the Guardian", "a BMW", "German cars", "Spotify's business model",
-               "the London Philharmonica Orchestra", "Estuans' job description", "people with too much money",
+               "the London Philharmonic Orchestra", "Estuans' job description", "people with too much money",
                "the Greek welfare system", "Estuans' internet connection", "a British comedian", "an Irishman",
                "some dude from down the black who carries a really big garbage can around and is probably suffering"
                " from some undiagnosed illness", "a police officer", "a fireman", "a movie soundtrack",
                "the King and all his horses", "Humpty Dumpty", "a death metal band", "really loud noises",
-               "PornHub", "RadActiveLobstr's ISP"]
+               "PornHub", "RadActiveLobstr's ISP", "a Barbed Cursed Sword", "a Whip of Excellency",
+               "Snow White", "Mufasa", "the Doctor", "a Dalek", "Urist McDwarf", "terrible pop culture references",
+               "a box of Cards Against Humanity", "humanity itself", "John Marston", "a Barbed Cursed Sword +5",
+               "an angry gazebo", "a Deja Vu event", "Inception", "a strange coat", "fifty interesting people",
+               "Skype", "MSN", "a newspaper", "an open parenthesis"]
