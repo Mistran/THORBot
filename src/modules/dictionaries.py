@@ -55,4 +55,5 @@ class Randict():
                "Snow White", "Mufasa", "the Doctor", "a Dalek", "Urist McDwarf", "terrible pop culture references",
                "a box of Cards Against Humanity", "humanity itself", "John Marston", "a Barbed Cursed Sword +5",
                "an angry gazebo", "a Deja Vu event", "Inception", "a strange coat", "fifty interesting people",
-               "Skype", "MSN", "a newspaper", "an open parenthesis"]
+               "Skype", "MSN", "a newspaper", "an open parenthesis", "Mikey's PHP skills", "Mikey's forums",
+               "Mikey's name", "Mikey's house", "Mikey's multitude of servers"]
