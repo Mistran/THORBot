@@ -201,29 +201,33 @@ class ThorBot(irc.IRCClient):
 
         #Help utilities
 
-        if msg.startswith("!help bbc"):
-            msg = h.bbc
-            self.msg(channel, msg)
+        if msg.startswith("!help"):
+            wlist = msg.split(' ')
+            note = itemgetter(1)(wlist)
 
-        if msg.startswith("!help roll"):
-            msg = h.roll
-            self.msg(channel, msg)
+            if note is "bbc":
+                msg = h.bbc
+                self.msg(channel, msg)
 
-        if msg.startswith("!help me"):
-            msg = h.me
-            self.msg(channel, msg)
+            if note is "roll":
+                msg = h.roll
+                self.msg(channel, msg)
 
-        if msg.startswith("!help t"):
-            msg = h.t
-            self.msg(channel, msg)
+            if note is "me":
+                msg = h.me
+                self.msg(channel, msg)
 
-        if msg.startswith("!help dt"):
-            msg = h.dt
-            self.msg(channel, msg)
+            if note is "t":
+                msg = h.t
+                self.msg(channel, msg)
 
-        if msg.startswith("!help qdb"):
-            msg = h.qdb
-            self.msg(channel, msg)
+            if note is "dt":
+                msg = h.dt
+                self.msg(channel, msg)
+
+            if note is "qdb":
+                msg = h.qdb
+                self.msg(channel, msg)
 
         #URL Fetchers & Integrated Utilities
 
@@ -250,13 +254,15 @@ class ThorBot(irc.IRCClient):
                 a = "I don't speak Klingon, %s" % user
                 self.msg(channel, a)
 
-            slangrep = '%s' % slang
-            tlangrep = '%s' % tlang
-            phrase = itemgetter(slice(3, None))(wlist)
-            phrase_ = ' '.join(phrase)
-            reply = gs.translate(phrase_, tlangrep, slangrep)
+            else:
 
-            self.msg(channel, reply.encode('UTF-8'))
+                slangrep = '%s' % slang
+                tlangrep = '%s' % tlang
+                phrase = itemgetter(slice(3, None))(wlist)
+                phrase_ = ' '.join(phrase)
+                reply = gs.translate(phrase_, tlangrep, slangrep)
+
+                self.msg(channel, reply.encode('UTF-8'))
 
         if msg.startswith("!dt "):
             #Translates the detected string to English
@@ -283,7 +289,6 @@ class ThorBot(irc.IRCClient):
                 url = "http://bash.org/?%s" % addend
                 msg = url
                 self.msg(channel, msg)
-
 
         if msg.startswith("!qdb"):
             #This is lazy. It's unorthodox. Why do I use it? Because it works.
