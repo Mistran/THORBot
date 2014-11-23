@@ -16,13 +16,9 @@ cfg = ConfigParser.RawConfigParser(allow_no_value=True)
 cfg.read("magni.ini")
 
 #TODO Summon Cthulhu and figure out why he broke my code
-#server = cfg.get('Connection', 'Server')
-#port = cfg.getint('Connection', 'Port')
+server = cfg.get('Connection', 'Server')
+port = cfg.getint('Connection', 'Port')
 __channels = cfg.get('Connection', 'Channels')
-
-#__channels = '#welcome'
-server = 'aurora.irc.arloria.net'
-port = int(6667)
 
 
 class ThorBotFactory(protocol.ClientFactory):

@@ -8,6 +8,7 @@ WolframAlpha integration will come later.
 
 # TWISTED Imports
 from twisted.words.protocols import irc
+from twisted.protocols.basic import LineReceiver
 
 # INTERNAL Imports
 from modules import dictionaries, news_fetcher, goslate, help
@@ -51,7 +52,6 @@ class ThorBot(irc.IRCClient):
         self.lineRate = 1
 
     def connectionMade(self):
-
         irc.IRCClient.connectionMade(self)
 
     def connectionLost(self, reason):
@@ -83,28 +83,38 @@ class ThorBot(irc.IRCClient):
         print "Signed on successfully"
         self.join(self.factory.channel)
 
-    def whois(self, nickname, server=None):
-        #Blatantly stolen from http://goo.gl/lwD47Q
-        if server is None:
-            pass
-        else:
-            self.sendline('WHOIS %s %s' % (server, nickname))
-
     def joined(self, channel):
-
         #Called when joining a channel
         print "Joined %s" % channel
         self.sendLine("MODE {nickname} {mode}".format(nickname=self.nickname, mode="+B"))
 
     def userJoined(self, user, channel):
-        #Checks when a user joins if there are any reminders available for them
+        #Temporary auto-ops. Will remove later.
+        #TODO Make these secure. Lazy git.
+        appr = ["#gamefront"]
+        op = ["Serio", "Mikey", "RadActiveLobstr"]
+        hop = ["Raz0r"]
+        voi = ["RPG", "Cat", "Crumbs"]
+
         sh = shelve.open('reminders')
         rfor = user
         check = sh.has_key(rfor)
 
+        #... Note: As per 23/11/2014, Magni is to be held responsible for any channel breaking incidents
+
+        if user in op and channel in appr:
+            self.sendLine("MODE %s +o %s" % (channel, user))
+
+        if user in hop and channel in appr:
+            self.sendLine("MODE %s +h %s" % (channel, user))
+
+        if user in voi and channel in appr:
+            self.sendLine("MODE %s +v %s" % (channel, user))
+
         if check is True:
             #Checks if key exists
             reminder = sh[rfor]
+
             reply = "[%s] %s" % (user, reminder)
             self.msg(channel, reply)
 
@@ -114,22 +124,30 @@ class ThorBot(irc.IRCClient):
         elif check is False:
             pass
 
-        #Called when another user joins a channel
-        print "%s has joined %s" % (user, channel)
-
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
         h = help.Helper
+        approved = ["Serio", "Cat", "Mikey"]
 
         if msg == "!reload news":
-            reload(news_fetcher)
-            msg = "News Fetcher updated"
-            self.msg(channel, msg)
+            if user in approved:
+                reload(news_fetcher)
+                msg = "News Fetcher updated"
+                self.msg(channel, msg)
+
+            else:
+                denied = "You are not authorized to use that command."
+                self.msg(channel, denied)
 
         if msg == "!reload dict":
-            reload(dictionaries)
-            msg = "Dictionaries updated"
-            self.msg(channel, msg)
+            if user in approved:
+                reload(dictionaries)
+                msg = "Dictionaries updated"
+                self.msg(channel, msg)
+
+            else:
+                denied = "You are not authorized to use that command."
+                self.msg(channel, denied)
 
         if msg:
             sh = shelve.open('reminders')
@@ -223,19 +241,18 @@ class ThorBot(irc.IRCClient):
 
         if msg.startswith("!t "):
             #Translates the source language into the target language
-
             gs = goslate.Goslate()
-
             wlist = msg.split(' ')
-
             slang = itemgetter(1)(wlist)
             tlang = itemgetter(2)(wlist)
 
+            if tlang is "kl":
+                a = "I don't speak Klingon, %s" % user
+                self.msg(channel, a)
+
             slangrep = '%s' % slang
             tlangrep = '%s' % tlang
-
             phrase = itemgetter(slice(3, None))(wlist)
-
             phrase_ = ' '.join(phrase)
             reply = gs.translate(phrase_, tlangrep, slangrep)
 
@@ -243,15 +260,10 @@ class ThorBot(irc.IRCClient):
 
         if msg.startswith("!dt "):
             #Translates the detected string to English
-
             gs = goslate.Goslate()
-
             wlist = msg.split(' ')
-
             trans = itemgetter(slice(1, None))(wlist)
-
             trans = ' '.join(trans)
-
             source = gs.detect(trans)
             reply = gs.translate(trans, 'en', source)
 
@@ -300,10 +312,6 @@ class ThorBot(irc.IRCClient):
         if msg.startswith('!remind'):
 
             dt = datetime.datetime
-            str_check = "Smek"
-
-            if msg.__contains__(str_check.lower()):
-                return
 
             #Open the shelf
             sh = shelve.open('reminders')
