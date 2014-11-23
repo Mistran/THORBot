@@ -269,18 +269,41 @@ class ThorBot(irc.IRCClient):
 
             self.msg(channel, reply.encode('UTF-8'))
 
+        if msg.startswith("!bash"):
+            if msg == "!bash random":
+                r = random.randint(1, 10000)
+                url = "http://bash.org/?%s" % r
+                self.msg(channel, url)
+
+            else:
+
+                wlist = msg.split(' ')
+
+                addend = itemgetter(1)(wlist)
+                url = "http://bash.org/?%s" % addend
+                msg = url
+                self.msg(channel, msg)
+
+
         if msg.startswith("!qdb"):
             #This is lazy. It's unorthodox. Why do I use it? Because it works.
             #99.98% of the time, anyway.
 
             #TODO The above is unacceptable. Find another way to make it work.
 
-            wlist = msg.split(' ')
+            if msg == "!qdb random":
+                r = random.randint(1, 620)
+                url = "http://qdb.v51.us/quote/%s" % r
+                self.msg(channel, url)
 
-            addend = itemgetter(1)(wlist)
-            url = "http://www.arloria.net/qdb/%s" % addend
-            msg = url
-            self.msg(channel, msg)
+            else:
+
+                wlist = msg.split(' ')
+
+                addend = itemgetter(1)(wlist)
+                url = "http://qdb.v51.us/quote/%s" % addend
+                msg = url
+                self.msg(channel, msg)
 
         if msg == "!joke":
             #I hate this function. Why do I keep it?
