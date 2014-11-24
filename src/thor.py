@@ -16,7 +16,7 @@ from modules import lists, news_fetcher, goslate, help
 import random, shelve, datetime
 
 # OTHER Imports
-import ConfigParser, ctypes
+import ConfigParser, ctypes, threading
 from operator import itemgetter
 
 # HTTP Handlers
@@ -174,10 +174,14 @@ class ThorBot(irc.IRCClient):
             msg = "Shakespeare in Dictionary: %s" % count
             self.msg(channel, msg)
 
-        if msg.startswith('.debugreminder'):
+        if msg == ".debug reminder":
             sh = shelve.open('reminders')
             klist = sh.keys()
             print klist
+
+        if msg == ".debug threads":
+            t = threading
+            print "CURRENT ACTIVE THREADS:" + t.activeCount()
 
         #List commands
 
