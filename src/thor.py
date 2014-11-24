@@ -53,6 +53,7 @@ class ThorBot(irc.IRCClient):
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
+        print
 
     def connectionLost(self, reason):
         irc.IRCClient.connectionLost(self, reason)
@@ -83,10 +84,12 @@ class ThorBot(irc.IRCClient):
 
     def joined(self, channel):
         #Called when joining a channel
-        print "Joined %s" % channel
+        print "[%s] Joined %s" % (datetime.datetime.time, channel)
         self.sendLine("MODE {nickname} {mode}".format(nickname=self.nickname, mode="+B"))
 
     def userJoined(self, user, channel):
+        print "[%s] %s has joined %s" % (datetime.datetime.time, user, channel)
+
         #Temporary auto-ops. Will remove later.
         #TODO Make these secure. Lazy git.
         appr = ["#gamefront", "#winning"]
