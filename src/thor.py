@@ -8,19 +8,15 @@ WolframAlpha integration will come later.
 
 # TWISTED Imports
 from twisted.words.protocols import irc
-from twisted.protocols.basic import LineReceiver
 
 # INTERNAL Imports
 from modules import lists, news_fetcher, goslate, help
 
 # SYS Imports
-import random
-import shelve
-import datetime
+import random, shelve, datetime
 
 # OTHER Imports
-import ConfigParser
-import ctypes
+import ConfigParser, ctypes
 from operator import itemgetter
 
 # HTTP Handlers
