@@ -78,6 +78,9 @@ class ThorBot(irc.IRCClient):
             else:
                 self.join(params[1])
 
+    def irc_RPL_WHOISREGNICK(self, prefix, params):
+        user = params[1]
+
     def signedOn(self):
         #Called when signing on
         print "Signed on successfully"
@@ -91,8 +94,8 @@ class ThorBot(irc.IRCClient):
     def userJoined(self, user, channel):
         #Temporary auto-ops. Will remove later.
         #TODO Make these secure. Lazy git.
-        appr = ["#gamefront"]
-        op = ["Serio", "Mikey", "RadActiveLobstr"]
+        appr = ["#gamefront", "#winning"]
+        op = ["Serio", "Mikey", "RadActiveLobstr", "TestName"]
         hop = ["Raz0r"]
         voi = ["RPG", "Cat", "Crumbs"]
 
