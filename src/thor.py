@@ -64,8 +64,6 @@ class ThorBot(irc.IRCClient):
         print "!!!INCORRECT PASSWORD!!!\n Check hammer.ini for the NICKPASS parameter"
         return
 
-    #TODO Rectify the lack of irc_RPC responses. It's an outrage.
-
     #EVENTS
 
     def irc_unknown(self, prefix, command, params):
