@@ -86,27 +86,9 @@ class ThorBot(irc.IRCClient):
     def userJoined(self, user, channel):
         print "[%s] %s has joined %s" % (datetime.datetime.time, user, channel)
 
-        #Temporary auto-ops. Will remove later.
-        #TODO Make these secure. Lazy git.
-        appr = ["#gamefront", "#winning"]
-        op = ["Serio", "Mikey", "RadActiveLobstr", "TestName"]
-        hop = ["Raz0r"]
-        voi = ["RPG", "Cat", "Crumbs"]
-
         sh = shelve.open('reminders')
         rfor = user
         check = sh.has_key(rfor)
-
-        #... Note: As per 23/11/2014, Magni is to be held responsible for any channel breaking incidents
-
-        if user in op and channel in appr:
-            self.sendLine("MODE %s +o %s" % (channel, user))
-
-        if user in hop and channel in appr:
-            self.sendLine("MODE %s +h %s" % (channel, user))
-
-        if user in voi and channel in appr:
-            self.sendLine("MODE %s +v %s" % (channel, user))
 
         if check is True:
             #Checks if key exists
@@ -189,8 +171,11 @@ class ThorBot(irc.IRCClient):
             slappee = msg.split(' ')
             slapped = itemgetter(slice(1, None))(slappee)
             sentence = ' '.join(slapped)
-            weapon = lists.Randict.weapons
-            weaponscore = random.choice(weapon)
+
+            #Randomizer
+            weaponscore = random.choice(lists.Randict.weapons)
+
+            #Post results
             attack = "\x02%s slapped %s with %s\x02" % (user, sentence, weaponscore)
             self.msg(channel, attack)
 
