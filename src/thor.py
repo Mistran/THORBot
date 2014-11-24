@@ -80,13 +80,11 @@ class ThorBot(irc.IRCClient):
 
     def joined(self, channel):
         #Called when joining a channel
-        timestamp = datetime.time
-        print "[%s] Joined %s" % (timestamp, channel)
+        print "Joined %s" % (channel)
         self.sendLine("MODE {nickname} {mode}".format(nickname=self.nickname, mode="+B"))
 
     def userJoined(self, user, channel):
-        timestamp = datetime.time
-        print "[%s] %s has joined %s" % (timestamp, user, channel)
+        print "%s has joined %s" % (user, channel)
 
         sh = shelve.open('reminders')
         rfor = user
