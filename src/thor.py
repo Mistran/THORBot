@@ -285,7 +285,7 @@ class ThorBot(irc.IRCClient):
 
             if msg == "!qdb random":
                 r = random.randint(1, 628)
-                url = "http://qdb.v51.us/quote/%s" % r
+                url = "http://arloria.net/qdb/%s" % r
                 self.msg(channel, url)
 
             else:
@@ -293,7 +293,7 @@ class ThorBot(irc.IRCClient):
                 wlist = msg.split(' ')
 
                 addend = itemgetter(1)(wlist)
-                url = "http://qdb.v51.us/quote/%s" % addend
+                url = "http://arloria.net/qdb/%s" % addend
                 msg = url
                 self.msg(channel, msg)
 
@@ -317,13 +317,12 @@ class ThorBot(irc.IRCClient):
 
             #Get user, datetime, key(target) and data(reminder)
             _from = user
-            timestamp = dt.today()
             target = itemgetter(1)(spl)
             reminder = itemgetter(slice(2, None))(spl)
             reminder_ = ' '.join(reminder)
 
             #Alter data to include timestamp and user
-            data = '(%s) %s reminds you: %s' % (timestamp, _from, reminder_)
+            data = '%s reminds you: %s' % (_from, reminder_)
 
             #Throw it into the shelf
             sh[target] = data
