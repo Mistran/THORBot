@@ -54,3 +54,5 @@ class Randict():
                "an angry gazebo", "a Deja Vu event", "Inception", "a strange coat", "fifty interesting people",
                "Skype", "MSN", "a newspaper", "an open parenthesis", "Mikey's PHP skills", "Mikey's forums",
                "Mikey's name", "Mikey's house", "Mikey's multitude of servers"]
+
+    nicknames = ["Hel", "Loki", "Odin", "Woden", "Thorvaldr"]

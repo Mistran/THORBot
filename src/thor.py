@@ -76,9 +76,6 @@ class ThorBot(irc.IRCClient):
             else:
                 self.join(params[1])
 
-    def irc_RPL_WHOISREGNICK(self, prefix, params):
-        user = params[1]
-
     def signedOn(self):
         #Called when signing on
         print "Signed on successfully"
@@ -298,7 +295,7 @@ class ThorBot(irc.IRCClient):
             #TODO The above is unacceptable. Find another way to make it work.
 
             if msg == "!qdb random":
-                r = random.randint(1, 620)
+                r = random.randint(1, 628)
                 url = "http://qdb.v51.us/quote/%s" % r
                 self.msg(channel, url)
 
@@ -374,4 +371,5 @@ class ThorBot(irc.IRCClient):
     #TODO Add more?
 
     def alterCollidedNick(self, nickname):
-        return nickname + 'Clone'
+        newnick = random.choice(dictionaries.Randict.nicknames)
+        return newnick
