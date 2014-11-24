@@ -319,23 +319,6 @@ class ThorBot(irc.IRCClient):
             msg = rj['value']['joke']
             self.msg(channel, msg.encode('utf-8', 'ignore'))
 
-        # Misc
-
-        if msg.startswith('!pornhub'):
-            #For RadActiveLobstr.
-            msg = "%s, I'm not that kind of bot." % user
-            self.msg(channel, msg)
-
-        if msg.startswith('!pronhub'):
-            #For RadActiveLobstr.
-            msg = "Did you mean !pornhub?"
-            self.msg(channel, msg)
-
-        if msg == "!help":
-            msg = "Commands: !dance, !disconnect, !joke, !version, !info, !t [source lang] [target lang], !dt [foreign " \
-                  "text], !qdb [number]"
-            self.notice(user, msg)
-
         # Reminder
 
         if msg.startswith('!remind'):
