@@ -243,19 +243,13 @@ class ThorBot(irc.IRCClient):
             slang = itemgetter(1)(wlist)
             tlang = itemgetter(2)(wlist)
 
-            if tlang is "kl":
-                a = "I don't speak Klingon, %s" % user
-                self.msg(channel, a)
+            slangrep = '%s' % slang
+            tlangrep = '%s' % tlang
+            phrase = itemgetter(slice(3, None))(wlist)
+            phrase_ = ' '.join(phrase)
+            reply = gs.translate(phrase_, tlangrep, slangrep)
 
-            else:
-
-                slangrep = '%s' % slang
-                tlangrep = '%s' % tlang
-                phrase = itemgetter(slice(3, None))(wlist)
-                phrase_ = ' '.join(phrase)
-                reply = gs.translate(phrase_, tlangrep, slangrep)
-
-                self.msg(channel, reply.encode('UTF-8'))
+            self.msg(channel, reply.encode('UTF-8'))
 
         if msg.startswith("!dt "):
             #Translates the detected string to English
