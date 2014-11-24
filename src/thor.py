@@ -11,7 +11,7 @@ from twisted.words.protocols import irc
 from twisted.protocols.basic import LineReceiver
 
 # INTERNAL Imports
-from modules import dictionaries, news_fetcher, goslate, help
+from modules import lists, news_fetcher, goslate, help
 
 # SYS Imports
 import random
@@ -142,7 +142,7 @@ class ThorBot(irc.IRCClient):
 
         if msg == "!reload dict":
             if user in approved:
-                reload(dictionaries)
+                reload(lists)
                 msg = "Dictionaries updated"
                 self.msg(channel, msg)
 
@@ -167,28 +167,35 @@ class ThorBot(irc.IRCClient):
             elif check is False:
                 pass
 
-        #Dict Tester
+        #Debug
         if msg == ".debugcount weapons":
-            count = len(dictionaries.Randict.weapons)
+            count = len(lists.Randict.weapons)
             msg = "Weapons in Dictionary: %s" % count
             self.msg(channel, msg)
 
         if msg == ".debugcount shakespeare":
-            count = len(dictionaries.Randict.shakespeare)
+            count = len(lists.Randict.shakespeare)
             msg = "Shakespeare in Dictionary: %s" % count
             self.msg(channel, msg)
+
+        if msg.startswith('.debugreminder'):
+            sh = shelve.open('reminders')
+            klist = sh.keys()
+            print klist
+
+        #List commands
 
         if msg.startswith("!slap"):
             slappee = msg.split(' ')
             slapped = itemgetter(slice(1, None))(slappee)
             sentence = ' '.join(slapped)
-            weapon = dictionaries.Randict.weapons
+            weapon = lists.Randict.weapons
             weaponscore = random.choice(weapon)
             attack = "\x02%s slapped %s with %s\x02" % (user, sentence, weaponscore)
             self.msg(channel, attack)
 
         if msg.startswith("!shakeit"):
-            d = dictionaries.Randict
+            d = lists.Randict
             shake = random.choice(d.shakespeare)
             self.msg(channel, shake)
 
@@ -347,15 +354,10 @@ class ThorBot(irc.IRCClient):
             if IndexError:
                 pass
 
-        if msg.startswith('.debugreminder'):
-            sh = shelve.open('reminders')
-            klist = sh.keys()
-            print klist
-
     #IRC CALLBACKS
 
     #TODO Add more?
 
     def alterCollidedNick(self, nickname):
-        newnick = random.choice(dictionaries.Randict.nicknames)
+        newnick = random.choice(lists.Randict.nicknames)
         return newnick
