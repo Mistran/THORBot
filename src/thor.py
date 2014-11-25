@@ -285,7 +285,7 @@ class ThorBot(irc.IRCClient):
 
             if msg == "!qdb random":
                 r = random.randint(1, 628)
-                url = "http://arloria.net/qdb/%s" % r
+                url = " http://qdb.v51.us/quote/%s" % r
                 self.msg(channel, url)
 
             else:
@@ -293,7 +293,7 @@ class ThorBot(irc.IRCClient):
                 wlist = msg.split(' ')
 
                 addend = itemgetter(1)(wlist)
-                url = "http://arloria.net/qdb/%s" % addend
+                url = " http://qdb.v51.us/quote/%s" % addend
                 msg = url
                 self.msg(channel, msg)
 
