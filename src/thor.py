@@ -16,7 +16,7 @@ from modules import lists, news_fetcher, goslate, help
 import random, shelve, datetime
 
 # OTHER Imports
-import ConfigParser, ctypes, threading
+import ConfigParser, ctypes, threading, dataset
 from operator import itemgetter
 
 # HTTP Handlers
@@ -86,23 +86,6 @@ class ThorBot(irc.IRCClient):
     def userJoined(self, user, channel):
         print "%s has joined %s" % (user, channel)
 
-        sh = shelve.open('reminders')
-        rfor = user
-        check = sh.has_key(rfor)
-
-        if check is True:
-            #Checks if key exists
-            reminder = sh[rfor]
-
-            reply = "[%s] %s" % (user, reminder)
-            self.msg(channel, reply)
-
-            #And deletes them
-            del sh[rfor]
-
-        elif check is False:
-            pass
-
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
         h = help.Helper
@@ -129,21 +112,15 @@ class ThorBot(irc.IRCClient):
                 self.msg(channel, denied)
 
         if msg:
-            sh = shelve.open('reminders')
-            rfor = user
-            check = sh.has_key(rfor)
+            db = dataset.connect('sqlite:///reminders.db')
 
-            if check is True:
-                #Checks if key exists
-                reminder = sh[rfor]
-                reply = "[%s] %s" % (user, reminder)
-                self.msg(channel, reply)
+            table = db['reminder']
 
-                #And deletes them
-                del sh[rfor]
-
-            elif check is False:
-                pass
+            check = table.distinct(user)
+            if check is None:
+                print "No Reminders"
+            else:
+                print check
 
         #Debug
         if msg == ".debugcount weapons":
@@ -309,25 +286,18 @@ class ThorBot(irc.IRCClient):
 
         if msg.startswith('!remind'):
 
-            dt = datetime.datetime
+            db = dataset.connect('sqlite:///reminders.db')
 
-            #Open the shelf
-            sh = shelve.open('reminders')
+            table = db['reminder']
+
             spl = msg.split(' ')
-
-            #Get user, datetime, key(target) and data(reminder)
             _from = user
             target = itemgetter(1)(spl)
             reminder = itemgetter(slice(2, None))(spl)
             reminder_ = ' '.join(reminder)
 
-            #Alter data to include timestamp and user
-            data = '%s reminds you: %s' % (_from, reminder_)
-
-            #Throw it into the shelf
-            sh[target] = data
-            msg = "I'll remind %s about that, %s" % (target, user)
-            self.msg(channel, msg)
+            table.insert(dict(p1=_from, p2=target, r=reminder_))
+            db.commit()
 
             if IndexError:
                 pass
