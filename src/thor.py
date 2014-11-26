@@ -13,7 +13,7 @@ from twisted.words.protocols import irc
 from modules import lists, news_fetcher, goslate, help
 
 # SYS Imports
-import random, shelve, datetime
+import random, shelve, datetime, os
 
 # OTHER Imports
 import ConfigParser, ctypes, threading, dataset
@@ -91,6 +91,17 @@ class ThorBot(irc.IRCClient):
         h = help.Helper
         approved = ["Serio", "Cat", "Mikey"]
 
+        if msg:
+            db = dataset.connect("sqlite:///valhalla.db/")
+            tab = db['logs']
+            msg = msg.encode('UTF-8')
+            timestamp = datetime.datetime.today()
+
+            if UnicodeDecodeError:
+                pass
+
+            tab.insert(dict(timestamp=timestamp, message=msg, user=user, channel=channel))
+
         if msg == "!reload news":
             if user in approved:
                 reload(news_fetcher)
@@ -110,17 +121,6 @@ class ThorBot(irc.IRCClient):
             else:
                 denied = "You are not authorized to use that command."
                 self.msg(channel, denied)
-
-        if msg:
-            db = dataset.connect('sqlite:///reminders.db')
-
-            table = db['reminder']
-
-            check = table.distinct(user)
-            if check is None:
-                print "No Reminders"
-            else:
-                print check
 
         #Debug
         if msg == ".debugcount weapons":
@@ -283,24 +283,6 @@ class ThorBot(irc.IRCClient):
             self.msg(channel, msg.encode('utf-8', 'ignore'))
 
         # Reminder
-
-        if msg.startswith('!remind'):
-
-            db = dataset.connect('sqlite:///reminders.db')
-
-            table = db['reminder']
-
-            spl = msg.split(' ')
-            _from = user
-            target = itemgetter(1)(spl)
-            reminder = itemgetter(slice(2, None))(spl)
-            reminder_ = ' '.join(reminder)
-
-            table.insert(dict(p1=_from, p2=target, r=reminder_))
-            db.commit()
-
-            if IndexError:
-                pass
 
     #IRC CALLBACKS
 
