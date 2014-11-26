@@ -91,14 +91,6 @@ class ThorBot(irc.IRCClient):
         h = help.Helper
         approved = ["Serio", "Cat", "Mikey"]
 
-        if msg:
-            db = dataset.connect("sqlite:///valhalla.db/")
-            tab = db['logs']
-            msg = msg.encode('UTF-8')
-            timestamp = datetime.datetime.today()
-
-            tab.insert(dict(timestamp=timestamp, message=msg, user=user, channel=channel))
-
         if msg == "!reload news":
             if user in approved:
                 reload(news_fetcher)
