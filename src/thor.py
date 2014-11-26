@@ -16,7 +16,7 @@ from modules import lists, news_fetcher, goslate, help
 import random, shelve, datetime, os
 
 # OTHER Imports
-import ConfigParser, ctypes, threading, dataset
+import ConfigParser, ctypes, threading, dataset, sys
 from operator import itemgetter
 
 # HTTP Handlers
@@ -96,9 +96,6 @@ class ThorBot(irc.IRCClient):
             tab = db['logs']
             msg = msg.encode('UTF-8')
             timestamp = datetime.datetime.today()
-
-            if UnicodeDecodeError:
-                pass
 
             tab.insert(dict(timestamp=timestamp, message=msg, user=user, channel=channel))
 
@@ -262,7 +259,7 @@ class ThorBot(irc.IRCClient):
 
             if msg == "!qdb random":
                 r = random.randint(1, 628)
-                url = " http://qdb.v51.us/quote/%s" % r
+                url = "http://qdb.v51.us/quote/%s" % r
                 self.msg(channel, url)
 
             else:
@@ -270,7 +267,7 @@ class ThorBot(irc.IRCClient):
                 wlist = msg.split(' ')
 
                 addend = itemgetter(1)(wlist)
-                url = " http://qdb.v51.us/quote/%s" % addend
+                url = "http://qdb.v51.us/quote/%s" % addend
                 msg = url
                 self.msg(channel, msg)
 
@@ -282,7 +279,46 @@ class ThorBot(irc.IRCClient):
             msg = rj['value']['joke']
             self.msg(channel, msg.encode('utf-8', 'ignore'))
 
-        # Reminder
+        if msg.startswith("!remind"):
+            db = dataset.connect("sqlite:///valhalla.db/")
+            tab = db['reminders']
+
+            split = msg.split(' ')
+
+            p1 = user
+
+            target = itemgetter(1)(split)
+            print target
+
+            if target is "me".lower():
+                target = p1
+                pass
+
+            count = itemgetter(3)(split)
+            print count
+
+            timer = itemgetter(4)(split)
+            print timer
+
+            remind = itemgetter(slice(5, None))(split)
+            remind = ' '.join(remind)
+            print remind
+
+            if timer is "day".lower() or "days".lower():
+                tab.insert(dict(p1=p1, p2=target, days=int(count), message=remind))
+                pass
+
+            elif timer is "hour".lower() or "hours".lower():
+                tab.insert(dict(p1=user, p2=target, hours=int(count), message=remind))
+                pass
+
+            elif timer is "minute".lower() or "minutes".lower():
+                tab.insert(dict(p1=user, p2=target, minutes=int(count), message=remind))
+                pass
+
+            elif timer is "second".lower() or "seconds".lower():
+                tab.insert(dict(p1=user, p2=target, seconds=int(count), message=remind))
+                pass
 
     #IRC CALLBACKS
 
