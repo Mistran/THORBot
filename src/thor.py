@@ -81,7 +81,7 @@ class ThorBot(irc.IRCClient):
     def joined(self, channel):
         #Called when joining a channel
         print "Joined %s" % (channel)
-        self.sendLine("MODE {nickname} {mode}".format(nickname=self.nickname, mode="+B"))
+        self.mode(self.nickname, True, "B")
 
     def userJoined(self, user, channel):
         print "%s has joined %s" % (user, channel)
