@@ -56,3 +56,6 @@ class Randict():
                "Mikey's name", "Mikey's house", "Mikey's multitude of servers"]
 
     nicknames = ["Hel", "Loki", "Odin", "Woden", "Thorvaldr"]
+
+    serio_is = ["too lazy", "too Danish", "too fantastic", "too Serio", "too busy with games", "too amused by RadActive"
+                                                                                               "Lobstr"]
