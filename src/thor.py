@@ -285,8 +285,9 @@ class ThorBot(irc.IRCClient):
             if msg.startswith("!s %s" % auth):
                 s = msg.split(' ')
                 c = itemgetter(2)(s)
-                m = itemgetter(slice(3))(s)
-                self.say(c, m)
+                m = itemgetter(slice(3, None))(s)
+                m_ = ' '.join(m)
+                self.say(c, m_)
 
         if msg.startswith("!features"):
             reason = random.choice(lists.Randict.serio_is)
