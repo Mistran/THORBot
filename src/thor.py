@@ -8,6 +8,9 @@ WolframAlpha integration will come later.
 
 # TWISTED Imports
 from twisted.words.protocols import irc
+from twisted.internet.defer import Deferred
+from twisted.internet import defer
+from twisted.python import log
 
 # INTERNAL Imports
 from modules import lists, news_fetcher, goslate, help
@@ -16,7 +19,7 @@ from modules import lists, news_fetcher, goslate, help
 import random, shelve, datetime, os
 
 # OTHER Imports
-import ConfigParser, ctypes, threading, dataset, sys
+import ConfigParser, ctypes, time, dataset
 from operator import itemgetter
 
 # HTTP Handlers
@@ -32,10 +35,7 @@ cfg.read("magni.ini")
 
 
 class ThorBot(irc.IRCClient):
-    """
-    Primary IRC class. Controls just about everything that isn't a module.
-    Below you'll find a bunch of options that are handled by hammer.ini.
-    """
+    lines = {}
 
     def __init__(self):
         nickname = cfg.get('Bot Settings', 'Nickname')
@@ -60,6 +60,8 @@ class ThorBot(irc.IRCClient):
     def irc_ERR_PASSWDMISMATCH(self, prefix, params):
         print "!!!INCORRECT PASSWORD!!!\n Check hammer.ini for the NICKPASS parameter"
         return
+
+
 
     #EVENTS
 
@@ -91,47 +93,9 @@ class ThorBot(irc.IRCClient):
         h = help.Helper
         approved = ["Serio", "Cat", "Mikey"]
 
-        if msg == "!reload news":
-            if user in approved:
-                reload(news_fetcher)
-                msg = "News Fetcher updated"
-                self.msg(channel, msg)
-
-            else:
-                denied = "You are not authorized to use that command."
-                self.msg(channel, denied)
-
-        if msg == "!reload dict":
-            if user in approved:
-                reload(lists)
-                msg = "Dictionaries updated"
-                self.msg(channel, msg)
-
-            else:
-                denied = "You are not authorized to use that command."
-                self.msg(channel, denied)
-
-        #Debug
-        if msg == ".debugcount weapons":
-            count = len(lists.Randict.weapons)
-            msg = "Weapons in Dictionary: %s" % count
-            self.msg(channel, msg)
-
-        if msg == ".debugcount shakespeare":
-            count = len(lists.Randict.shakespeare)
-            msg = "Shakespeare in Dictionary: %s" % count
-            self.msg(channel, msg)
-
-        if msg == ".debug reminder":
-            sh = shelve.open('reminders')
-            klist = sh.keys()
-            print klist
-
-        if msg == ".debug threads":
-            t = threading
-            print "CURRENT ACTIVE THREADS:" + t.activeCount()
-
-        #List commands
+        if msg:
+            log.msg('[%s] <%s> %s' % (channel, user, msg))
+            pass
 
         if msg.startswith("!slap"):
             slappee = msg.split(' ')
@@ -191,12 +155,16 @@ class ThorBot(irc.IRCClient):
         #URL Fetchers & Integrated Utilities
 
         if msg == "!bbc":
+            reload(news_fetcher)
+            time.sleep(0.5)
             b = news_fetcher.BBCNews_r
             self.lineRate = 2
 
             self.msg(channel, b.bbc_fd.encode('UTF-8'))
 
         if msg == "!bbc random":
+            reload(news_fetcher)
+            time.sleep(0.5)
             b = news_fetcher.BBCNews_r
             self.lineRate = 2
 
@@ -280,37 +248,36 @@ class ThorBot(irc.IRCClient):
             p1 = user
 
             target = itemgetter(1)(split)
-            print target
-
-            if target is "me".lower():
-                target = p1
-                pass
 
             count = itemgetter(3)(split)
-            print count
 
             timer = itemgetter(4)(split)
-            print timer
 
             remind = itemgetter(slice(5, None))(split)
+
             remind = ' '.join(remind)
-            print remind
 
-            if timer is "day".lower() or "days".lower():
-                tab.insert(dict(p1=p1, p2=target, days=int(count), message=remind))
+            # Here there be dragons (I DON'T KNOW WHAT I WAS DOING)
+
+            if timer == "day" or "days":
+                tab.insert(dict(p1=p1, p2=target, days=count, hours=None, minutes=None, seconds=None, message=remind))
                 pass
 
-            elif timer is "hour".lower() or "hours".lower():
-                tab.insert(dict(p1=user, p2=target, hours=int(count), message=remind))
+            elif timer == "hour" or "hours":
+                tab.insert(dict(p1=p1, p2=target, days=None, hours=count, minutes=None, seconds=None, message=remind))
                 pass
 
-            elif timer is "minute".lower() or "minutes".lower():
-                tab.insert(dict(p1=user, p2=target, minutes=int(count), message=remind))
+            elif timer == "minute" or "minutes":
+                tab.insert(dict(p1=p1, p2=target, days=None, hours=None, minutes=count, seconds=None, message=remind))
                 pass
 
-            elif timer is "second".lower() or "seconds".lower():
-                tab.insert(dict(p1=user, p2=target, seconds=int(count), message=remind))
+            elif timer == "second" or "seconds":
+                tab.insert(dict(p1=p1, p2=target, days=None, hours=None, minutes=None, seconds=count, message=remind))
                 pass
+
+            else:
+                error = "INCORRECT SYNTAX: !remind [user] in [x] [days/hours/minutes/seconds] [message]"
+                self.msg(channel, error)
 
     #IRC CALLBACKS
 
