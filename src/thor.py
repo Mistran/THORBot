@@ -276,13 +276,13 @@ class ThorBot(irc.IRCClient):
                 self.msg(channel, error)
 
         if channel == self.nickname:
-            if msg == "!restart %s" % auth:
+            if msg == "!authtest %s" % auth:
                 pass
-            if msg == "!join %s" % auth:
+            if msg.startswith("!join %s" % auth):
                 s = msg.split(' ')
                 c = itemgetter(2)(s)
                 self.join(c)
-            if msg == "!s %s" % auth:
+            if msg.startswith("!s %s" % auth):
                 s = msg.split(' ')
                 c = itemgetter(2)(s)
                 m = itemgetter(slice(3))(s)
