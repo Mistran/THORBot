@@ -27,6 +27,7 @@ import requests
 
 versionName = "Magni"
 versionEnv = "Python 2.7.3"
+lineRate = 2
 
 ctypes.windll.kernel32.SetConsoleTitleA("THORBot @ Valhalla")
 
@@ -35,7 +36,6 @@ cfg.read("magni.ini")
 
 
 class ThorBot(irc.IRCClient):
-    lines = {}
 
     def __init__(self):
         nickname = cfg.get('Bot Settings', 'Nickname')
@@ -60,8 +60,6 @@ class ThorBot(irc.IRCClient):
     def irc_ERR_PASSWDMISMATCH(self, prefix, params):
         print "!!!INCORRECT PASSWORD!!!\n Check hammer.ini for the NICKPASS parameter"
         return
-
-
 
     #EVENTS
 
@@ -91,7 +89,7 @@ class ThorBot(irc.IRCClient):
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
         h = help.Helper
-        approved = ["Serio", "Cat", "Mikey"]
+        auth = cfg.get('Security', 'Authentication')
 
         if msg:
             log.msg('[%s] <%s> %s' % (channel, user, msg))
@@ -156,7 +154,6 @@ class ThorBot(irc.IRCClient):
 
         if msg == "!bbc":
             reload(news_fetcher)
-            time.sleep(0.5)
             b = news_fetcher.BBCNews_r
             self.lineRate = 2
 
@@ -164,7 +161,6 @@ class ThorBot(irc.IRCClient):
 
         if msg == "!bbc random":
             reload(news_fetcher)
-            time.sleep(0.5)
             b = news_fetcher.BBCNews_r
             self.lineRate = 2
 
@@ -259,25 +255,43 @@ class ThorBot(irc.IRCClient):
 
             # Here there be dragons (I DON'T KNOW WHAT I WAS DOING)
 
-            if timer == "day" or "days":
+            if timer in ("day" or "days"):
                 tab.insert(dict(p1=p1, p2=target, days=count, hours=None, minutes=None, seconds=None, message=remind))
                 pass
 
-            elif timer == "hour" or "hours":
+            elif timer in ("hour" or "hours"):
                 tab.insert(dict(p1=p1, p2=target, days=None, hours=count, minutes=None, seconds=None, message=remind))
                 pass
 
-            elif timer == "minute" or "minutes":
+            elif timer in ("minute" or "minutes"):
                 tab.insert(dict(p1=p1, p2=target, days=None, hours=None, minutes=count, seconds=None, message=remind))
                 pass
 
-            elif timer == "second" or "seconds":
+            elif timer in ("second" or "seconds"):
                 tab.insert(dict(p1=p1, p2=target, days=None, hours=None, minutes=None, seconds=count, message=remind))
                 pass
 
             else:
                 error = "INCORRECT SYNTAX: !remind [user] in [x] [days/hours/minutes/seconds] [message]"
                 self.msg(channel, error)
+
+        if channel == self.nickname:
+            if msg == "!restart %s" % auth:
+                pass
+            if msg == "!join %s" % auth:
+                s = msg.split(' ')
+                c = itemgetter(2)(s)
+                self.join(c)
+            if msg == "!s %s" % auth:
+                s = msg.split(' ')
+                c = itemgetter(2)(s)
+                m = itemgetter(slice(3))(s)
+                self.say(c, m)
+
+        if msg.startswith("!features"):
+            reason = random.choice(lists.Randict.serio_is)
+            msg = "Fuck that, Serio is %s" % reason
+            self.msg(channel, msg)
 
     #IRC CALLBACKS
 
