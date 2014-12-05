@@ -16,10 +16,10 @@ from twisted.python import log
 from modules import lists, news_fetcher, goslate, help
 
 # SYS Imports
-import random, shelve, datetime, os
+import random
 
 # OTHER Imports
-import ConfigParser, ctypes, time, dataset
+import ConfigParser, ctypes, dataset
 from operator import itemgetter
 
 # HTTP Handlers
@@ -276,18 +276,30 @@ class ThorBot(irc.IRCClient):
                 self.msg(channel, error)
 
         if channel == self.nickname:
-            if msg == "!authtest %s" % auth:
-                pass
-            if msg.startswith("!join %s" % auth):
+            #if msg == "!reboot %s" % auth:
+            #    os.system('chariot.py')
+            #    os._exit(1)
+            if msg.startswith("!j %s" % auth):
                 s = msg.split(' ')
                 c = itemgetter(2)(s)
                 self.join(c)
+            if msg.startswith("!l %s" % auth):
+                s = msg.split(' ')
+                c = itemgetter(2)(s)
+                self.leave(c)
+            if msg.startswith("!k %s" % auth):
+                s = msg.split(' ')
+                c = itemgetter(2)(s)
+                u = itemgetter(3)(s)
+                r = itemgetter(slice(3, None))(s)
+                r_ = ' '.join(r)
+                self.kick(c, u, r_)
             if msg.startswith("!s %s" % auth):
                 s = msg.split(' ')
                 c = itemgetter(2)(s)
                 m = itemgetter(slice(3, None))(s)
                 m_ = ' '.join(m)
-                self.say(c, m_)
+                self.msg(c, m_)
 
         if msg.startswith("!features"):
             reason = random.choice(lists.Randict.serio_is)
