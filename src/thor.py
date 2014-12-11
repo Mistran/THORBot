@@ -121,20 +121,20 @@ class ThorBot(irc.IRCClient):
         if msg:
             log.msg('[%s] <%s> %s' % (channel, user, msg))
 
+            if self.nickname in msg:
+                if user != "Smek":
+                    msg = msg.split(self.nickname)
+                    msg = ' '.join(msg)
+
+                    r = br.reply(msg).encode('utf-8')
+                    self.msg(channel, r)
+                else:
+                    return
+
             if msg.__contains__("gratis-handykarten"):
                 return
             else:
                 br.learn(msg)
-
-        if self.nickname in msg:
-            if user != "Smek":
-                msg = msg.split(self.nickname)
-                msg = ' '.join(msg)
-
-                r = br.reply(msg).encode('utf-8')
-                self.msg(channel, r)
-            else:
-                return
 
         if msg.startswith("!slap"):
             slappee = msg.split(' ')
