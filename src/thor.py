@@ -13,7 +13,11 @@ from twisted.internet import defer
 from twisted.python import log
 
 # INTERNAL Imports
-from modules import lists, news_fetcher, goslate, help
+from modules import lists
+from modules import help
+from modules import news_fetcher
+from modules import goslate
+from modules.logger import Bin
 
 # SYS Imports
 import random
@@ -25,9 +29,13 @@ from operator import itemgetter
 # HTTP Handlers
 import requests
 
+#COBE
+from cobe.brain import Brain
+
 versionName = "Magni"
 versionEnv = "Python 2.7.3"
-lineRate = 2
+
+br = Brain('brain.brain')
 
 ctypes.windll.kernel32.SetConsoleTitleA("THORBot @ Valhalla")
 
@@ -40,15 +48,20 @@ class ThorBot(irc.IRCClient):
     def __init__(self):
         nickname = cfg.get('Bot Settings', 'Nickname')
         password = cfg.get('Bot Settings', 'NickPass')
-        realname = 'Magni[THORBOT] @ VALHALLA'
+        realname = cfg.get('Bot Settings', 'Realname')
 
         self.realname = realname
         self.nickname = nickname
         self.password = password
-        self.lineRate = 1
+        self.lineRate = 2
+        self.teaserv = 0
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
+
+        #Tells Magni to use the English COBE stemmer
+        br.set_stemmer('english')
+
         print
 
     def connectionLost(self, reason):
@@ -89,11 +102,39 @@ class ThorBot(irc.IRCClient):
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
         h = help.Helper
+        teaserved = 0
+
         auth = cfg.get('Security', 'Authentication')
+
+        self.logger = Bin(open(self.factory.filename, "a"))
+        self.logger.log("%s" % msg)
+
+        if msg.startswith("!tea"):
+            l = msg.split(' ')
+            u = itemgetter(1)(l)
+
+            self.describe(channel, "serves %s with tea" % u)
+            teaserved += 1
+            state = "Tea served %s time(s)." % teaserved
+            self.msg(channel, state)
 
         if msg:
             log.msg('[%s] <%s> %s' % (channel, user, msg))
-            pass
+
+            if msg.__contains__("gratis-handykarten"):
+                return
+            else:
+                br.learn(msg)
+
+        if self.nickname in msg:
+            if user != "Smek":
+                msg = msg.split(self.nickname)
+                msg = ' '.join(msg)
+
+                r = br.reply(msg).encode('utf-8')
+                self.msg(channel, r)
+            else:
+                return
 
         if msg.startswith("!slap"):
             slappee = msg.split(' ')
@@ -234,46 +275,6 @@ class ThorBot(irc.IRCClient):
             rj = r.json()
             msg = rj['value']['joke']
             self.msg(channel, msg.encode('utf-8', 'ignore'))
-
-        if msg.startswith("!remind"):
-            db = dataset.connect("sqlite:///valhalla.db/")
-            tab = db['reminders']
-
-            split = msg.split(' ')
-
-            p1 = user
-
-            target = itemgetter(1)(split)
-
-            count = itemgetter(3)(split)
-
-            timer = itemgetter(4)(split)
-
-            remind = itemgetter(slice(5, None))(split)
-
-            remind = ' '.join(remind)
-
-            # Here there be dragons (I DON'T KNOW WHAT I WAS DOING)
-
-            if timer in ("day" or "days"):
-                tab.insert(dict(p1=p1, p2=target, days=count, hours=None, minutes=None, seconds=None, message=remind))
-                pass
-
-            elif timer in ("hour" or "hours"):
-                tab.insert(dict(p1=p1, p2=target, days=None, hours=count, minutes=None, seconds=None, message=remind))
-                pass
-
-            elif timer in ("minute" or "minutes"):
-                tab.insert(dict(p1=p1, p2=target, days=None, hours=None, minutes=count, seconds=None, message=remind))
-                pass
-
-            elif timer in ("second" or "seconds"):
-                tab.insert(dict(p1=p1, p2=target, days=None, hours=None, minutes=None, seconds=count, message=remind))
-                pass
-
-            else:
-                error = "INCORRECT SYNTAX: !remind [user] in [x] [days/hours/minutes/seconds] [message]"
-                self.msg(channel, error)
 
         if channel == self.nickname:
             #if msg == "!reboot %s" % auth:

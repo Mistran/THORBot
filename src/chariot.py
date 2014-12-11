@@ -19,13 +19,16 @@ cfg.read("magni.ini")
 server = cfg.get('Connection', 'Server')
 port = cfg.getint('Connection', 'Port')
 __channels = cfg.get('Connection', 'Channels')
+logfile = cfg.get('Connection', 'Logfile')
 
 
 class ThorBotFactory(protocol.ClientFactory):
     protocol = ThorBot
 
-    def __init__(self, channel):
+    def __init__(self, channel, filename):
         self.channel = channel
+        self.filename = filename
+        self.logfile = logfile
 
     def buildProtocol(self, addr):
         p = ThorBot()
@@ -43,5 +46,5 @@ class ThorBotFactory(protocol.ClientFactory):
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
-    reactor.connectTCP(server, port, ThorBotFactory(__channels))
+    reactor.connectTCP(server, port, ThorBotFactory(__channels, logfile))
     reactor.run()
