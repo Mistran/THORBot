@@ -33,9 +33,10 @@ import requests
 from cobe.brain import Brain
 
 versionName = "Magni"
-versionEnv = "Python 2.7.3"
+versionEnv = "Python 2.7.8"
 
-br = Brain('brain.brain')
+br = Brain('valhalla.brain')
+br.set_stemmer('english')
 
 ctypes.windll.kernel32.SetConsoleTitleA("THORBot @ Valhalla")
 
@@ -58,10 +59,6 @@ class ThorBot(irc.IRCClient):
 
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
-
-        #Tells Magni to use the English COBE stemmer
-        br.set_stemmer('english')
-
         print
 
     def connectionLost(self, reason):
@@ -123,16 +120,25 @@ class ThorBot(irc.IRCClient):
 
             if self.nickname in msg:
                 if user != "Smek":
-                    msg = msg.split(self.nickname)
-                    msg = ' '.join(msg)
-
-                    r = br.reply(msg).encode('utf-8')
+                    nr = msg.replace(self.nickname, '')
+                    r = br.reply(nr, loop_ms=1000).encode('utf-8')
                     self.msg(channel, r)
-                else:
-                    return
-
-            if msg.__contains__("gratis-handykarten"):
-                return
+                f = msg.replace(self.nickname, '')
+                br.learn(f)
+            if self.nickname.lower() in msg:
+                if user != "Smek":
+                    nr = msg.replace(self.nickname.lower(), '')
+                    r = br.reply(nr, loop_ms=1000).encode('utf-8')
+                    self.msg(channel, r)
+                f = msg.replace(self.nickname.lower(), '')
+                br.learn(f)
+            if self.nickname.upper() in msg:
+                if user != "Smek":
+                    nr = msg.replace(self.nickname.upper(), '')
+                    r = br.reply(nr, loop_ms=1000).encode('utf-8')
+                    self.msg(channel, r)
+                f = msg.replace(self.nickname.upper(), '')
+                br.learn(f)
             else:
                 br.learn(msg)
 
@@ -152,14 +158,6 @@ class ThorBot(irc.IRCClient):
             d = lists.Randict
             shake = random.choice(d.shakespeare)
             self.msg(channel, shake)
-
-        #Dice Roll
-
-        if msg == "!roll":
-            dice = random.randint(1, 100)
-            dice = str(dice)
-
-            self.msg(channel, dice)
 
         #Help utilities
 
@@ -192,6 +190,19 @@ class ThorBot(irc.IRCClient):
                 self.msg(channel, msg)
 
         #URL Fetchers & Integrated Utilities
+        """
+        if msg == "!xkcd":
+            r = requests.get('http://xkcd.com/info.0.json')
+            t = r.json()
+            data = json.loads(t)
+
+            num = data['num']
+            link = data['link']
+            stitle = data['safe_title']
+
+            res = "[#%s] %s - %s" % (num, stitle, link)
+            self.msg(channel, res)
+        """
 
         if msg == "!bbc":
             reload(news_fetcher)
