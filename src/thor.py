@@ -23,7 +23,7 @@ from modules.logger import Bin
 import random
 
 # OTHER Imports
-import ConfigParser, ctypes, dataset
+import ConfigParser, ctypes, json, re, urllib2
 from operator import itemgetter
 
 # HTTP Handlers
@@ -121,22 +121,31 @@ class ThorBot(irc.IRCClient):
             if self.nickname in msg:
                 if user != "Smek":
                     nr = msg.replace(self.nickname, '')
-                    r = br.reply(nr, loop_ms=1000).encode('utf-8')
-                    self.msg(channel, r)
+                    r = br.reply(nr, loop_ms=1000)
+
+                    r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    self.msg(channel, r.encode('utf-8'))
                 f = msg.replace(self.nickname, '')
                 br.learn(f)
             if self.nickname.lower() in msg:
                 if user != "Smek":
                     nr = msg.replace(self.nickname.lower(), '')
-                    r = br.reply(nr, loop_ms=1000).encode('utf-8')
-                    self.msg(channel, r)
+                    r = br.reply(nr, loop_ms=1000)
+
+                    r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    self.msg(channel, r.encode('utf-8'))
                 f = msg.replace(self.nickname.lower(), '')
                 br.learn(f)
             if self.nickname.upper() in msg:
                 if user != "Smek":
                     nr = msg.replace(self.nickname.upper(), '')
-                    r = br.reply(nr, loop_ms=1000).encode('utf-8')
-                    self.msg(channel, r)
+                    r = br.reply(nr, loop_ms=1000)
+
+                    r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    self.msg(channel, r.encode('utf-8'))
                 f = msg.replace(self.nickname.upper(), '')
                 br.learn(f)
             else:
@@ -190,19 +199,39 @@ class ThorBot(irc.IRCClient):
                 self.msg(channel, msg)
 
         #URL Fetchers & Integrated Utilities
-        """
+
         if msg == "!xkcd":
-            r = requests.get('http://xkcd.com/info.0.json')
-            t = r.json()
+            r = 'http://xkcd.com/info.0.json'
+            t = urllib2.urlopen(r).read()
             data = json.loads(t)
 
             num = data['num']
-            link = data['link']
+            link = 'http://xkcd.com/%s/' % num
             stitle = data['safe_title']
 
             res = "[#%s] %s - %s" % (num, stitle, link)
-            self.msg(channel, res)
-        """
+            self.msg(channel, res.encode('UTF-8'))
+
+        if msg.startswith("!xkcd "):
+            split = msg.split(' ')
+            issue = itemgetter(1)(split)
+
+            r = 'http://xkcd.com/%s/info.0.json' % issue
+            t = urllib2.urlopen(r).read()
+
+            if urllib2.HTTPError:
+                msg = "ERROR: Not a valid XKCD"
+                self.msg(channel, msg.encode('UTF-8'))
+
+            else:
+                data = json.loads(t)
+
+                num = data['num']
+                link = 'http://xkcd.com/%s/' % num
+                stitle = data['safe_title']
+
+                res = "[#%s] %s - %s" % (num, stitle, link)
+                self.msg(channel, res.encode('UTF-8'))
 
         if msg == "!bbc":
             reload(news_fetcher)
