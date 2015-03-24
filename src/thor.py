@@ -96,6 +96,20 @@ class ThorBot(irc.IRCClient):
     def userJoined(self, user, channel):
         print "%s has joined %s" % (user, channel)
 
+    def action(self, user, channel, data):
+            if self.nickname in data:
+                if user != "Smek":
+                    nr = data.replace(self.nickname, '')
+                    r = br.reply(nr, loop_ms=1500)
+
+                    r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    r = "%s: %s" % (user, r)
+
+                    self.msg(channel, r.encode('utf-8'))
+                f = data.replace(self.nickname, '')
+                br.learn(f)
+
     def privmsg(self, user, channel, msg):
         user = user.split('!', 1)[0]
         h = help.Helper
@@ -121,9 +135,11 @@ class ThorBot(irc.IRCClient):
             if self.nickname in msg:
                 if user != "Smek":
                     nr = msg.replace(self.nickname, '')
-                    r = br.reply(nr, loop_ms=1000)
+                    r = br.reply(nr, loop_ms=1500)
 
                     r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    r = "%s: %s" % (user, r)
 
                     self.msg(channel, r.encode('utf-8'))
                 f = msg.replace(self.nickname, '')
@@ -131,9 +147,11 @@ class ThorBot(irc.IRCClient):
             if self.nickname.lower() in msg:
                 if user != "Smek":
                     nr = msg.replace(self.nickname.lower(), '')
-                    r = br.reply(nr, loop_ms=1000)
+                    r = br.reply(nr, loop_ms=1500)
 
                     r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    r = "%s: %s" % (user, r)
 
                     self.msg(channel, r.encode('utf-8'))
                 f = msg.replace(self.nickname.lower(), '')
@@ -141,9 +159,11 @@ class ThorBot(irc.IRCClient):
             if self.nickname.upper() in msg:
                 if user != "Smek":
                     nr = msg.replace(self.nickname.upper(), '')
-                    r = br.reply(nr, loop_ms=1000)
+                    r = br.reply(nr, loop_ms=1500)
 
                     r = re.sub(r'(\d\d:\d\d <.*?>.)', '', r)
+
+                    r = "%s: %s" % (user, r)
 
                     self.msg(channel, r.encode('utf-8'))
                 f = msg.replace(self.nickname.upper(), '')
@@ -220,8 +240,7 @@ class ThorBot(irc.IRCClient):
             t = urllib2.urlopen(r).read()
 
             if urllib2.HTTPError:
-                msg = "ERROR: Not a valid XKCD"
-                self.msg(channel, msg.encode('UTF-8'))
+                res = "HTTP 400"
 
             else:
                 data = json.loads(t)
@@ -231,7 +250,8 @@ class ThorBot(irc.IRCClient):
                 stitle = data['safe_title']
 
                 res = "[#%s] %s - %s" % (num, stitle, link)
-                self.msg(channel, res.encode('UTF-8'))
+
+            self.msg(channel, res.encode('UTF-8'))
 
         if msg == "!bbc":
             reload(news_fetcher)
@@ -252,7 +272,16 @@ class ThorBot(irc.IRCClient):
             gs = goslate.Goslate()
             wlist = msg.split(' ')
             slang = itemgetter(1)(wlist)
+
+            if slang is None:
+                err = "ERROR: Source Language missing"
+                self.msg(channel, err)
+
             tlang = itemgetter(2)(wlist)
+
+            if tlang is None:
+                err = "ERROR: Target Language missing"
+                self.msg(channel, err)
 
             slangrep = '%s' % slang
             tlangrep = '%s' % tlang
@@ -346,6 +375,12 @@ class ThorBot(irc.IRCClient):
             reason = random.choice(lists.Randict.serio_is)
             msg = "Fuck that, Serio is %s" % reason
             self.msg(channel, msg)
+
+        # GOOGLE API INTEGRATION
+
+        #if msg.__contains__('http://www.youtube.com/'):
+        #    t = msg.split(' ')
+        #    se = re.match('\bhttps:\/\/www\.youtube\.com\/\b', t)
 
     #IRC CALLBACKS
 
